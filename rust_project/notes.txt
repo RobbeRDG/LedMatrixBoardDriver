@@ -1,0 +1,46 @@
+* figuring out bitshifts...
+
+gegeven
+13 << 3 == 104
+
+13  = 1101
+3   = 11
+104 = 1101000
+
+maw shift 13 over naar links met 3, dit geeft 104
+--> logical left shift: insert 0
+
+
+* #define INP_GPIO(io, g) *(io->gpio_port_+((g)/10)) &= ~(7<<(((g)%10)*3))
+
+hoe lezen we dit?
+
+*(io->gpio_port_+((g)/10)) == 
+        *((pointer) de registerlocatie van de gpio_port_ + (pointer) registernr)
+    maw: dit evalueert naar de waarde van het register van deze pin 
+
+&= dit is hetzelfde als:
+    set left gelijk aan (left BITWISE AND right)
+
+    maw mask left met ~(7 << ((g%10)*3))
+
+7 = 0000 0111
+
+shift dit naar links met waarde ((g%10)*3)
+    -- zoals in de documentatie
+    bvb GPIO2 ---> 6
+        7 << 6 = 7 * 2^6 = 1 1100 0000 = 448
+
+        ~448 is dan ... 1110 0011 1111 -> behoud alle andere waarden behalve
+                                        die van GPIO2-pin
+
+maw: de functie INP_GPIO(io, g) doet 
+        mask het register van pin g zodanig dat de bits van g == 000
+
+ANALOOG OUT_GPIO:
+    mask het register van pin g zodanig dat de bits van g == 001
+    hier wordt dan wel gebruik gemaakt van LOGICAL OR om dit correct te doen 
+
+
+
+    
